@@ -94,7 +94,7 @@ const EditVehicle = () => {
   const loadVehicle = async () => {
     try {
       const response = await vehicleSvc.getSingleVehicle(id as string);
-      setVehicle(response);
+      setVehicle({ ...response, imageUrls: response?.imageUrls ? JSON.parse(response.imageUrls.toString()) : [] });
       setFieldValue("vehicleNumber", response.vehicleNumber || "");
       setFieldValue("company", response.company || "");
       setFieldValue("capacity", response.capacity || "");
@@ -197,7 +197,7 @@ const EditVehicle = () => {
                     <div className="col-12 mb-4">
                       <p className="detail-label mb-2">Selected Images</p>
                       <Grid container spacing={2}>
-                        {selectedImages.imageUrls.map((imageUrl: string) => (
+                        {selectedImages?.imageUrls?.map((imageUrl: string) => (
                           <Grid item xs={12} sm={6} md={6} lg={6} key={imageUrl}>
                             <VehicleImage
                               imageUrl={imageUrl}

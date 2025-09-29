@@ -17,6 +17,7 @@ const vehicleSchema = Yup.object().shape({
   insuranceNumber: Yup.string().required(AppMessages.REQUIRED),
   insuranceExpiryDate: Yup.string().required(AppMessages.REQUIRED),
   fitnessNumber: Yup.string().required(AppMessages.REQUIRED),
+  costPerKm: Yup.string().required(AppMessages.REQUIRED),
   fitnessExpiryDate: Yup.string().required(AppMessages.REQUIRED),
 });
 

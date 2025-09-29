@@ -16,6 +16,7 @@ export interface IVehicle {
   insuranceExpiryDate: Date | string;
   fitnessNumber: string;
   fitnessExpiryDate: Date | string;
+  costPerKm: number;
   createdAt: Date | string;
   updatedAt: Date | string;
 }

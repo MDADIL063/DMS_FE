@@ -1,4 +1,16 @@
-import { Button, Card, CardContent, CardHeader, Divider, FormControl, InputLabel, MenuItem, OutlinedInput, Select } from "@mui/material";
+import {
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  Divider,
+  FormControl,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  OutlinedInput,
+  Select,
+} from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -17,6 +29,7 @@ import { VehicleService } from "../../services/vehicle.service";
 import BackButton from "../../shared/components/BackButton";
 import ImageCropper from "../../shared/components/ImageCropper";
 import VehicleImage from "./components/VehicleImage";
+import CurrencyRupeeTwoToneIcon from "@mui/icons-material/CurrencyRupeeTwoTone";
 
 const initialValues = {
   file: "",
@@ -31,6 +44,7 @@ const initialValues = {
   insuranceExpiryDate: "",
   fitnessNumber: "",
   fitnessExpiryDate: "",
+  costPerKm: "",
 };
 
 const AddVehicle = () => {
@@ -71,8 +85,7 @@ const AddVehicle = () => {
         formData.append("insuranceExpiryDate", values.insuranceExpiryDate || "");
         formData.append("fitnessNumber", values.fitnessNumber || "");
         formData.append("fitnessExpiryDate", values.fitnessExpiryDate || "");
-
-        console.log(formData.get("fitnessExpiryDate"));
+        formData.append("costPerKm", values.costPerKm || "");
 
         await vehicleSvc.addVehicle(formData);
         notifySvc.showSucces(AppMessages.VEHICLE_ADDED);
@@ -167,7 +180,7 @@ const AddVehicle = () => {
                     <div className="col-12 mb-4">
                       <p className="detail-label mb-2">Selected Images</p>
                       <Grid container spacing={2}>
-                        {selectedImages.imageUrls.map((imageUrl: string) => (
+                        {selectedImages?.imageUrls?.map((imageUrl: string) => (
                           <Grid item xs={12} sm={6} md={6} lg={6} key={imageUrl}>
                             <VehicleImage
                               imageUrl={imageUrl}
@@ -378,7 +391,7 @@ const AddVehicle = () => {
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DatePicker
                           name="insuranceExpiryDate"
-                          label="Insuranc Expiry Date"
+                          label="Insurance Expiry Date"
                           disablePast
                           value={values.insuranceExpiryDate ? dayjs(values.insuranceExpiryDate) : null}
                           onChange={(value) => setFieldValue("insuranceExpiryDate", value, true)}
@@ -426,6 +439,35 @@ const AddVehicle = () => {
                     </FormControl>
                     {errors.fitnessExpiryDate && touched.fitnessExpiryDate ? (
                       <p className="text-danger text-sm">{errors.fitnessExpiryDate}</p>
+                    ) : (
+                      <p className="text-danger text-sm invisible">&nbsp;</p>
+                    )}
+                  </div>
+                  <div className="col-md-6 col-12 mt-4">
+                    <FormControl variant="outlined" fullWidth>
+                      <InputLabel
+                        className={errors.costPerKm && touched.costPerKm ? "text-danger" : ""}
+                        htmlFor="outlined-adornment-password"
+                      >
+                        Cost Per KM
+                      </InputLabel>
+                      <OutlinedInput
+                        error={errors.costPerKm && touched.costPerKm ? true : undefined}
+                        type="number"
+                        name="costPerKm"
+                        label="Cost Per KM"
+                        value={values.costPerKm}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        startAdornment={
+                          <InputAdornment position="start">
+                            <CurrencyRupeeTwoToneIcon fontSize="small" />
+                          </InputAdornment>
+                        }
+                      />
+                    </FormControl>
+                    {errors.costPerKm && touched.costPerKm ? (
+                      <p className="text-danger text-sm">{errors.costPerKm}</p>
                     ) : (
                       <p className="text-danger text-sm invisible">&nbsp;</p>
                     )}
