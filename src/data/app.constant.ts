@@ -76,6 +76,7 @@ export const API_URLS = {
   ADDRESS: `${API_HOST}/address`,
   SETTINGS: `${API_HOST}/common/settings`,
   FEEDBACK: `${API_HOST}/feedBack`,
+  TRIPS: `${API_HOST}/trips`,
 };
 
 export enum ImageMimeType {

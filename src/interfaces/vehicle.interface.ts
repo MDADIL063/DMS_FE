@@ -5,7 +5,7 @@ export interface IVehicle {
   _id?: string;
   vehicleNumber: string;
   company: string;
-  capacity: string;
+  capacity: number;
   mfgYear?: any;
   vehicleType: IVehicleType;
   chassisNumber?: string;

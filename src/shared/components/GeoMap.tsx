@@ -47,7 +47,7 @@ const GeoMap = ({
       center={mapCenter}
       zoom={zoom}
       options={{ streetViewControl: false, disableDoubleClickZoom: true, zoomControl, mapTypeControl, fullscreenControl }}
-      onClick={handleMapClick}
+      // onClick={handleMapClick}
     >
       <Marker position={mapCenter}></Marker>
     </GoogleMap>

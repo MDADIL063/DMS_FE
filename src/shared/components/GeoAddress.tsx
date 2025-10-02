@@ -1,20 +1,26 @@
 import { FormControl, InputLabel, OutlinedInput } from "@mui/material";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { usePlacesWidget } from "react-google-autocomplete";
 import { IAddress, IGeoAddress } from "../../interfaces/address.interface";
 import { UtilService } from "../../services/util.service";
 import GeoMap from "./GeoMap";
 
 interface IProps {
-  address?: IAddress | null;
+  address?: IAddress | null | IGeoAddress;
   geoAddressChange: (address: IGeoAddress) => void;
+  addressLabel?: string;
+  fullAddressString?: string;
+  lat?: number;
+  lng?: number;
 }
 
-const GeoAddress = ({ address, geoAddressChange }: IProps) => {
+const GeoAddress = ({ address, geoAddressChange, addressLabel = "Search Address", fullAddressString, lat, lng }: IProps) => {
   const utilSvc = new UtilService();
-  const [fullAddress, setFullAddress] = useState<string>("");
+  const [fullAddress, setFullAddress] = useState<string>(
+    fullAddressString || "Behind Veterinary College, A.B. Road, Borkhedi, Village Harsola, Indore - 453441, Madhya Pradesh, India"
+  );
   const [showInitialMap, setShowInitialMap] = useState<boolean>(false);
-  const [mapCenter, setMapCenter] = useState({ lat: 19.086022922443416, lng: 72.90804243684849 });
+  const [mapCenter, setMapCenter] = useState({ lat: lat || 22.5794319, lng: lng || 75.7937941 });
   const [geoAddress, setGeoAddress] = useState<IGeoAddress>({
     flatNo: "",
     streetName: "",
@@ -114,12 +120,12 @@ const GeoAddress = ({ address, geoAddressChange }: IProps) => {
     <div className="row">
       <div className="col-12 mb-4">
         <FormControl fullWidth>
-          <InputLabel>Search Address</InputLabel>
+          <InputLabel>{addressLabel}</InputLabel>
           <OutlinedInput
             inputRef={ref}
             type="search"
             name="search"
-            label="Search Address"
+            label={addressLabel}
             value={fullAddress}
             onChange={(e) => setFullAddress(e.target.value)}
             fullWidth
