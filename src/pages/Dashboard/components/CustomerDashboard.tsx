@@ -1,7 +1,7 @@
 import React from "react";
 import FeedbackForm from "../../../shared/components/Common/FeedbackForm";
 import FeedbackList from "../../../shared/components/Common/FeedBackList";
-import AddTrip from "../../Trip/AddTrip";
+import AddTrip from "../../Trip/AddEditTrip";
 
 const CustomerDashboard = () => {
   return (

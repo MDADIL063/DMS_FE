@@ -153,6 +153,30 @@ export function RouterElement() {
         ? LazyLoadRoutes("Setting", "Settings")
         : AuthenticateRoute("/login"),
     },
+    {
+      path: "trips",
+      element: authSvc.canActivateRoute(RouteType.PRIVATE, [UserRoles.ADMIN, UserRoles.DRIVER, UserRoles.CUSTOMER])
+        ? LazyLoadRoutes("Trip", "Trips")
+        : AuthenticateRoute("/login"),
+    },
+    {
+      path: "trips/:id",
+      element: authSvc.canActivateRoute(RouteType.PRIVATE, [UserRoles.ADMIN, UserRoles.DRIVER, UserRoles.CUSTOMER])
+        ? LazyLoadRoutes("Trip", "TripDetails")
+        : AuthenticateRoute("/login"),
+    },
+    {
+      path: "trips/new",
+      element: authSvc.canActivateRoute(RouteType.PRIVATE, [UserRoles.ADMIN, UserRoles.DRIVER, UserRoles.CUSTOMER])
+        ? LazyLoadRoutes("Trip", "AddEditTrip")
+        : AuthenticateRoute("/login"),
+    },
+    {
+      path: "trips/:id/edit",
+      element: authSvc.canActivateRoute(RouteType.PRIVATE, [UserRoles.ADMIN, UserRoles.DRIVER, UserRoles.CUSTOMER])
+        ? LazyLoadRoutes("Trip", "AddEditTrip")
+        : AuthenticateRoute("/login"),
+    },
   ];
 
   const routing = useRoutes(routes);
