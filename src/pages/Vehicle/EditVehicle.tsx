@@ -1,4 +1,16 @@
-import { Button, Card, CardContent, CardHeader, Divider, FormControl, InputLabel, MenuItem, OutlinedInput, Select } from "@mui/material";
+import {
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  Divider,
+  FormControl,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  OutlinedInput,
+  Select,
+} from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -19,6 +31,7 @@ import BackButton from "../../shared/components/BackButton";
 import ConfirmDialog from "../../shared/components/ConfirmDialog";
 import ImageCropper from "../../shared/components/ImageCropper";
 import VehicleImage from "./components/VehicleImage";
+import CurrencyRupeeTwoToneIcon from "@mui/icons-material/CurrencyRupeeTwoTone";
 
 const initialValues = {
   file: "",
@@ -29,6 +42,11 @@ const initialValues = {
   mfgYear: "",
   chassisNumber: "",
   regNumber: "",
+  insuranceNumber: "",
+  insuranceExpiryDate: "",
+  fitnessNumber: "",
+  fitnessExpiryDate: "",
+  costPerKm: "",
 };
 
 const EditVehicle = () => {
@@ -68,6 +86,11 @@ const EditVehicle = () => {
         formData.append("mfgYear", values.mfgYear ? dayjs(values.mfgYear).toISOString() : "");
         formData.append("chassisNumber", values.chassisNumber || "");
         formData.append("regNumber", values.regNumber || "");
+        formData.append("insuranceNumber", values.insuranceNumber || "");
+        formData.append("insuranceExpiryDate", values.insuranceExpiryDate || "");
+        formData.append("fitnessNumber", values.fitnessNumber || "");
+        formData.append("fitnessExpiryDate", values.fitnessExpiryDate || "");
+        formData.append("costPerKm", values.costPerKm || "");
         await vehicleSvc.updateVehicle(id as string, formData);
         notifySvc.showSucces(AppMessages.VEHICLE_ADDED);
         navigate(-1);
@@ -102,6 +125,11 @@ const EditVehicle = () => {
       setFieldValue("mfgYear", response.mfgYear ? dayjs(response.mfgYear) : "");
       setFieldValue("chassisNumber", response.chassisNumber || "");
       setFieldValue("regNumber", response.regNumber || "");
+      setFieldValue("insuranceNumber", response.insuranceNumber || "");
+      setFieldValue("insuranceExpiryDate", response.insuranceExpiryDate ? dayjs(response.insuranceExpiryDate) : "");
+      setFieldValue("fitnessNumber", response.fitnessNumber || "");
+      setFieldValue("fitnessExpiryDate", response.fitnessExpiryDate ? dayjs(response.fitnessExpiryDate) : "");
+      setFieldValue("costPerKm", response.costPerKm || "");
     } catch (error) {
       notifySvc.showError(error);
     }
@@ -390,7 +418,7 @@ const EditVehicle = () => {
                       <p className="text-danger text-sm invisible">&nbsp;</p>
                     )}
                   </div>
-                  <div className="col-md-12 col-12 mt-4">
+                  <div className="col-md-6 col-12 mt-4">
                     <FormControl variant="outlined" fullWidth>
                       <InputLabel
                         className={errors.regNumber && touched.regNumber ? "text-danger" : ""}
@@ -410,6 +438,113 @@ const EditVehicle = () => {
                     </FormControl>
                     {errors.regNumber && touched.regNumber ? (
                       <p className="text-danger text-sm">{errors.regNumber}</p>
+                    ) : (
+                      <p className="text-danger text-sm invisible">&nbsp;</p>
+                    )}
+                  </div>
+                  <div className="col-md-6 col-12 mt-4">
+                    <FormControl variant="outlined" fullWidth>
+                      <InputLabel className={errors.insuranceNumber && touched.insuranceNumber ? "text-danger" : ""}>
+                        Vehicle Insurance Number
+                      </InputLabel>
+                      <OutlinedInput
+                        error={errors.insuranceNumber && touched.insuranceNumber ? true : undefined}
+                        type="text"
+                        name="insuranceNumber"
+                        label="Vehicle Insurance Number"
+                        value={values.insuranceNumber}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                      />
+                    </FormControl>
+                    {errors.insuranceNumber && touched.insuranceNumber ? (
+                      <p className="text-danger text-sm">{errors.insuranceNumber}</p>
+                    ) : (
+                      <p className="text-danger text-sm invisible">&nbsp;</p>
+                    )}
+                  </div>
+                  <div className="col-md-6 col-12 mt-4">
+                    <FormControl variant="outlined" fullWidth>
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DatePicker
+                          name="insuranceExpiryDate"
+                          label="Insurance Expiry Date"
+                          disablePast
+                          value={values.insuranceExpiryDate ? dayjs(values.insuranceExpiryDate) : null}
+                          onChange={(value) => setFieldValue("insuranceExpiryDate", value, true)}
+                        />
+                      </LocalizationProvider>
+                    </FormControl>
+                    {errors.insuranceExpiryDate && touched.insuranceExpiryDate ? (
+                      <p className="text-danger text-sm">{errors.insuranceExpiryDate}</p>
+                    ) : (
+                      <p className="text-danger text-sm invisible">&nbsp;</p>
+                    )}
+                  </div>
+                  <div className="col-md-6 col-12 mt-4">
+                    <FormControl variant="outlined" fullWidth>
+                      <InputLabel className={errors.fitnessNumber && touched.fitnessNumber ? "text-danger" : ""}>
+                        Vehicle Fitness Number
+                      </InputLabel>
+                      <OutlinedInput
+                        error={errors.fitnessNumber && touched.fitnessNumber ? true : undefined}
+                        type="text"
+                        name="fitnessNumber"
+                        label="Vehicle Fitness Number"
+                        value={values.fitnessNumber}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                      />
+                    </FormControl>
+                    {errors.fitnessNumber && touched.fitnessNumber ? (
+                      <p className="text-danger text-sm">{errors.fitnessNumber}</p>
+                    ) : (
+                      <p className="text-danger text-sm invisible">&nbsp;</p>
+                    )}
+                  </div>
+                  <div className="col-md-6 col-12 mt-4">
+                    <FormControl variant="outlined" fullWidth>
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DatePicker
+                          name="fitnessExpiryDate"
+                          label="Fitness Expiry Date"
+                          disablePast
+                          value={values.fitnessExpiryDate ? dayjs(values.fitnessExpiryDate) : null}
+                          onChange={(value) => setFieldValue("fitnessExpiryDate", value, true)}
+                        />
+                      </LocalizationProvider>
+                    </FormControl>
+                    {errors.fitnessExpiryDate && touched.fitnessExpiryDate ? (
+                      <p className="text-danger text-sm">{errors.fitnessExpiryDate}</p>
+                    ) : (
+                      <p className="text-danger text-sm invisible">&nbsp;</p>
+                    )}
+                  </div>
+                  <div className="col-md-6 col-12 mt-4">
+                    <FormControl variant="outlined" fullWidth>
+                      <InputLabel
+                        className={errors.costPerKm && touched.costPerKm ? "text-danger" : ""}
+                        htmlFor="outlined-adornment-password"
+                      >
+                        Cost Per KM
+                      </InputLabel>
+                      <OutlinedInput
+                        error={errors.costPerKm && touched.costPerKm ? true : undefined}
+                        type="number"
+                        name="costPerKm"
+                        label="Cost Per KM"
+                        value={values.costPerKm}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        startAdornment={
+                          <InputAdornment position="start">
+                            <CurrencyRupeeTwoToneIcon fontSize="small" />
+                          </InputAdornment>
+                        }
+                      />
+                    </FormControl>
+                    {errors.costPerKm && touched.costPerKm ? (
+                      <p className="text-danger text-sm">{errors.costPerKm}</p>
                     ) : (
                       <p className="text-danger text-sm invisible">&nbsp;</p>
                     )}

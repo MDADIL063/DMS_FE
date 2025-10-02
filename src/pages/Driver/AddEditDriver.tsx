@@ -59,7 +59,7 @@ const AddEditDriver = () => {
         formData.append("userName", values.userName || "");
         formData.append("licenseNumber", values.licenseNumber || "");
         formData.append("licenseExpiryDate", values.licenseExpiryDate || "");
-        console.log("MD", formData.get("licenseExpiryDate"));
+
         if (id) {
           await driverSvc.updateDriver(id, formData);
           notifySvc.showSucces(AppMessages.DRIVER_UPDATED);

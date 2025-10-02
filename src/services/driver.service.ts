@@ -16,6 +16,11 @@ export class DriverService {
     return response.data;
   }
 
+  async getDriverCount(): Promise<{ total: number; active: number }> {
+    const response = await this.httpSvc.get(`${API_URLS.DRIVERS}/drivers-count`);
+    return response.data;
+  }
+
   async getSingleDriver(id: string): Promise<IUser> {
     const url = `${API_URLS.DRIVERS}/${id}`;
     const response = await this.httpSvc.get(url);

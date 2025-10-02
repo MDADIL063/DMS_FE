@@ -15,6 +15,10 @@ export class VehicleService {
     });
     return response.data;
   }
+  async getVehicleCount(): Promise<{ total: number; active: number }> {
+    const response = await this.httpSvc.get(`${API_URLS.VEHICLES}/vehicles-count`);
+    return response.data;
+  }
 
   async getSingleVehicle(id: string): Promise<IVehicle> {
     const url = `${API_URLS.VEHICLES}/${id}`;
