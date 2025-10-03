@@ -143,6 +143,7 @@ export enum DriverAvailabilityStatus {
 export enum InternalStatusTypes {
   ACTIVITY_STATUS = "ActivityStatus",
   DAILY_EXPENSE_STATUS = "DailyExpenseStatus",
+  TRIP_STATUS = "TripStatus",
 }
 
 export enum DateRangeDurationTypes {
@@ -159,6 +160,14 @@ export enum CurrencyCode {
 }
 
 export const PageSizeOptions = [5, 10, 25, 50];
+
+export enum TripStatus {
+  NEW = "New",
+  SCHEDULED = "Scheduled",
+  INPROGRESS = "InProgress",
+  COMPLETED = "Completed",
+  CANCELLED = "Cancelled",
+}
 
 export enum HttpStatus {
   CONTINUE = 100,

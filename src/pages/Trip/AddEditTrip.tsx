@@ -15,28 +15,7 @@ import CurrencyRupeeTwoToneIcon from "@mui/icons-material/CurrencyRupeeTwoTone";
 import { useDebouncedCallback } from "use-debounce";
 import { UtilService } from "../../services/util.service";
 import { IVehicle } from "../../interfaces/vehicle.interface";
-
-interface ITripForm {
-  reason: string;
-  description: string;
-  itemToCarry: string;
-  capacity: number;
-  vehicle: string;
-  startLocation: {
-    address: string;
-    lat: number;
-    lng: number;
-  };
-  endLocation: {
-    address: string;
-    lat: number;
-    lng: number;
-  };
-  distance: number;
-  duration: string;
-  price: string;
-  startDateTime: any;
-}
+import { ITripForm } from "../../interfaces/trip.interface";
 
 const initialValues: ITripForm = {
   reason: "",

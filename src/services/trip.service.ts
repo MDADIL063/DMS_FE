@@ -4,6 +4,7 @@ import { HttpService } from "./http.service";
 import { UtilService } from "./util.service";
 import { IDriverAvailability } from "../interfaces/attendance.interface";
 import { IFeedback, IFeedbackPayload } from "../interfaces/feedBack.interface";
+import { ITrip } from "../interfaces/trip.interface";
 
 export class TripService {
   private httpSvc = new HttpService();
@@ -15,11 +16,11 @@ export class TripService {
     return response.data.data;
   }
 
-  //   async getFeedbackByDriver(driverId: string): Promise<IFeedback[]> {
-  //     const url = `${API_URLS.FEEDBACK}/driver/${driverId}`;
-  //     const response = await this.httpSvc.get(url);
-  //     return response.data.data;
-  //   }
+  async getSingleTrip(id: string): Promise<ITrip> {
+    const url = `${API_URLS.TRIPS}/${id}`;
+    const response = await this.httpSvc.get(url);
+    return response.data;
+  }
 
   async updateTrip(id: string, payload: Partial<any>): Promise<IFeedback> {
     const url = `${API_URLS.TRIPS}/${id}`;

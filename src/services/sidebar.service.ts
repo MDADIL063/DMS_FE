@@ -9,6 +9,7 @@ import { UserRoles } from "../data/app.constant";
 import { ISidebarItem } from "../interfaces/sidebar-item.interface";
 import { IUser } from "../interfaces/user.interface";
 import { useAppSelector } from "../redux/hooks";
+import TimeToLeaveTwoToneIcon from "@mui/icons-material/TimeToLeaveTwoTone";
 
 export class SidebarService {
   private loggedInUser: IUser = useAppSelector((store) => store.loggedInUser);
@@ -18,6 +19,13 @@ export class SidebarService {
       name: "Dashboard",
       path: "/dashboard",
       iconComp: DashboardTwoToneIcon,
+      roles: [UserRoles.ADMIN, UserRoles.DRIVER, UserRoles.CUSTOMER],
+      isConfigration: false,
+    },
+    {
+      name: "Trips",
+      path: "/trips",
+      iconComp: LocalShippingTwoToneIcon,
       roles: [UserRoles.ADMIN, UserRoles.DRIVER, UserRoles.CUSTOMER],
       isConfigration: false,
     },
@@ -38,7 +46,7 @@ export class SidebarService {
     {
       name: "Vehicles",
       path: "/vehicles",
-      iconComp: LocalShippingTwoToneIcon,
+      iconComp: TimeToLeaveTwoToneIcon,
       roles: [UserRoles.ADMIN],
       isConfigration: false,
     },
