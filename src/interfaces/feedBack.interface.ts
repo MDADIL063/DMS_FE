@@ -1,3 +1,4 @@
+import { ITrip } from "./trip.interface";
 import { IUser } from "./user.interface";
 
 export interface IFeedback {
@@ -9,10 +10,12 @@ export interface IFeedback {
   updatedBy?: string;
   createdAt?: string;
   updatedAt?: string;
+  trip: ITrip;
 }
 
 export interface IFeedbackPayload {
   driver: string; // store ObjectId as string
   rating: number | null;
+  trip: string;
   comment?: string;
 }

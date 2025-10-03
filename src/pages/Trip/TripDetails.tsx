@@ -21,6 +21,7 @@ import GeoMap from "../../shared/components/GeoMap";
 import AssignDriverToTrip from "./components/AssignDriverToTrip";
 import TripActivity from "./components/TripActivity";
 import { ITripActivity } from "../../interfaces/trip-activity.interface";
+import FeedbackForm from "../../shared/components/Common/FeedbackForm";
 
 const TripDetails = () => {
   const [trip, setTrip] = useState<ITrip | null>(null);
@@ -242,6 +243,16 @@ const TripDetails = () => {
 
           <CardContent>
             <TripActivity tripActivity={tripActivity} />
+          </CardContent>
+        </Card>
+      ) : null}
+      {trip?.status === TripStatus.COMPLETED ? (
+        <Card sx={{ marginTop: "20px" }}>
+          <CardHeader title="Driver Rating" className="card-heading" />
+          <Divider />
+
+          <CardContent>
+            <FeedbackForm trip={trip} />
           </CardContent>
         </Card>
       ) : null}
