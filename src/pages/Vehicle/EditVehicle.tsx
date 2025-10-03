@@ -117,7 +117,7 @@ const EditVehicle = () => {
   const loadVehicle = async () => {
     try {
       const response = await vehicleSvc.getSingleVehicle(id as string);
-      setVehicle({ ...response, imageUrls: response?.imageUrls ? JSON.parse(response.imageUrls.toString()) : [] });
+      setVehicle(response);
       setFieldValue("vehicleNumber", response.vehicleNumber || "");
       setFieldValue("company", response.company || "");
       setFieldValue("capacity", response.capacity || "");

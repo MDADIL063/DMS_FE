@@ -77,60 +77,60 @@ const CheckInCheckOut: React.FC = () => {
   };
 
   return (
-    <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh" bgcolor="#f5f5f5">
-      <Card sx={{ width: 400, borderRadius: 3, boxShadow: 6 }}>
-        <CardContent>
-          <Typography variant="h5" align="center" gutterBottom>
-            Driver Attendance
-          </Typography>
+    // <Box>
+    <Card sx={{ borderRadius: 3, boxShadow: 4 }}>
+      <CardContent>
+        <Typography variant="h5" align="center" gutterBottom>
+          Driver Attendance
+        </Typography>
 
+        <Typography variant="subtitle1" align="center" sx={{ mb: 3 }}>
+          Current Status:
+          <strong
+            style={{
+              color: status === "Available" ? "green" : status === "Off Duty" ? "red" : "gray",
+            }}
+          >
+            {status}
+          </strong>
+        </Typography>
+        {checkInTime ? (
           <Typography variant="subtitle1" align="center" sx={{ mb: 3 }}>
-            Current Status:
+            CheckIn Time:
             <strong
               style={{
-                color: status === "Available" ? "green" : status === "Off Duty" ? "red" : "gray",
+                color: "gray",
               }}
             >
-              {status}
+              {checkInTime}
             </strong>
           </Typography>
-          {checkInTime ? (
-            <Typography variant="subtitle1" align="center" sx={{ mb: 3 }}>
-              CheckIn Time:
-              <strong
-                style={{
-                  color: "gray",
-                }}
-              >
-                {checkInTime}
-              </strong>
-            </Typography>
-          ) : null}
-          {checkOutTime ? (
-            <Typography variant="subtitle1" align="center" sx={{ mb: 3 }}>
-              CheckOut Time:
-              <strong
-                style={{
-                  color: "gray",
-                }}
-              >
-                {checkOutTime}
-              </strong>
-            </Typography>
-          ) : null}
+        ) : null}
+        {checkOutTime ? (
+          <Typography variant="subtitle1" align="center" sx={{ mb: 3 }}>
+            CheckOut Time:
+            <strong
+              style={{
+                color: "gray",
+              }}
+            >
+              {checkOutTime}
+            </strong>
+          </Typography>
+        ) : null}
 
-          <Stack direction="row" spacing={2} justifyContent="center">
-            <Button variant="contained" color="success" disabled={loading || !!checkInTime} onClick={driverCheckIn}>
-              {loading && !checkInTime ? <CircularProgress size={20} color="inherit" /> : "Check In"}
-            </Button>
+        <Stack direction="row" spacing={2} justifyContent="center">
+          <Button variant="contained" color="success" disabled={loading || !!checkInTime} onClick={driverCheckIn}>
+            {loading && !checkInTime ? <CircularProgress size={20} color="inherit" /> : "Check In"}
+          </Button>
 
-            <Button variant="contained" color="error" disabled={loading || !checkInTime || !!checkOutTime} onClick={driverCheckOut}>
-              {loading && checkInTime && !checkOutTime ? <CircularProgress size={20} color="inherit" /> : "Check Out"}
-            </Button>
-          </Stack>
-        </CardContent>
-      </Card>
-    </Box>
+          <Button variant="contained" color="error" disabled={loading || !checkInTime || !!checkOutTime} onClick={driverCheckOut}>
+            {loading && checkInTime && !checkOutTime ? <CircularProgress size={20} color="inherit" /> : "Check Out"}
+          </Button>
+        </Stack>
+      </CardContent>
+    </Card>
+    // </Box>
   );
 };
 
