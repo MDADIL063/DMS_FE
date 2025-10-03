@@ -5,6 +5,7 @@ import { UtilService } from "./util.service";
 import { ITrip } from "../interfaces/trip.interface";
 import { IListResponse } from "../interfaces/response.interface";
 import { ITripFilters } from "../interfaces/filter.interface";
+import { ITripActivity } from "../interfaces/trip-activity.interface";
 
 export class TripService {
   private httpSvc = new HttpService();
@@ -51,5 +52,11 @@ export class TripService {
     const url = `${API_URLS.TRIPS}/${tripId}/update-status`;
     const response = await this.httpSvc.put(url, payload);
     return response.data.data;
+  }
+
+  async getTripActivity(id: string): Promise<ITripActivity[]> {
+    const url = `${API_URLS.TRIPS}/${id}/activity`;
+    const response = await this.httpSvc.get(url);
+    return response.data;
   }
 }

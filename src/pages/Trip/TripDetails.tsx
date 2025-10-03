@@ -1,56 +1,47 @@
-import CreateTwoToneIcon from "@mui/icons-material/CreateTwoTone";
+import AddTaskTwoToneIcon from "@mui/icons-material/AddTaskTwoTone";
+import AlarmOnTwoToneIcon from "@mui/icons-material/AlarmOnTwoTone";
+import DoDisturbAltTwoToneIcon from "@mui/icons-material/DoDisturbAltTwoTone";
+import DoneAllTwoToneIcon from "@mui/icons-material/DoneAllTwoTone";
 import { Button, Card, CardContent, CardHeader } from "@mui/material";
 import Divider from "@mui/material/Divider";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { DailyExpenseStatus, DateFormats, InternalStatusTypes, TripStatus, UserRoles } from "../../data/app.constant";
-import { IDailyExpense } from "../../interfaces/daily-expense.interface";
+import { useParams } from "react-router-dom";
+import { DateFormats, InternalStatusTypes, TripStatus, UserRoles } from "../../data/app.constant";
+import { ITrip } from "../../interfaces/trip.interface";
 import { IUser } from "../../interfaces/user.interface";
 import { useAppSelector } from "../../redux/hooks";
 import { AppNotificationService } from "../../services/app-notification.service";
-import { DailyExpenseService } from "../../services/daily-expense.service";
+import { TripService } from "../../services/trip.service";
 import { UtilService } from "../../services/util.service";
 import BackButton from "../../shared/components/BackButton";
-import ActivateDeactivateStatus from "../../shared/components/Common/ActivateDeactivateStatus";
 import ActivityStatusChip from "../../shared/components/Common/ActivityStatusChip";
 import Currency from "../../shared/components/Common/Currency";
 import ExternalLink from "../../shared/components/Common/ExternalLink";
-import { ITrip } from "../../interfaces/trip.interface";
-import { TripService } from "../../services/trip.service";
 import GeoMap from "../../shared/components/GeoMap";
 import AssignDriverToTrip from "./components/AssignDriverToTrip";
-import AddTaskTwoToneIcon from "@mui/icons-material/AddTaskTwoTone";
-import AlarmOnTwoToneIcon from "@mui/icons-material/AlarmOnTwoTone";
-import DoneAllIcon from "@mui/icons-material/DoneAll";
-import DoDisturbAltTwoToneIcon from "@mui/icons-material/DoDisturbAltTwoTone";
-import DoneAllTwoToneIcon from "@mui/icons-material/DoneAllTwoTone";
+import TripActivity from "./components/TripActivity";
+import { ITripActivity } from "../../interfaces/trip-activity.interface";
 
 const TripDetails = () => {
   const [trip, setTrip] = useState<ITrip | null>(null);
+  const [tripActivity, setTripActivity] = useState<ITripActivity[]>([]);
   const [showDriverAssignDialog, setShowDriverAssignDialog] = useState<boolean>(false);
   const loggedInUser: IUser = useAppSelector((store) => store.loggedInUser);
   const { id } = useParams();
-  const navigate = useNavigate();
   const notifySvc = new AppNotificationService();
   const tripSvc = new TripService();
   const utilSvc = new UtilService();
 
   useEffect(() => {
-    // console.log(
-    //   navigator.geolocation.getCurrentPosition((position) => {
-    //     const latitude = position.coords.latitude;
-    //     const longitude = position.coords.longitude;
-    //     console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
-    //     // You can then use these coordinates to display on a map, etc.
-    //   })
-    // );
     loadTrip();
   }, []);
 
   const loadTrip = async () => {
     try {
       const response = await tripSvc.getSingleTrip(id as string);
+      const activity = await tripSvc.getTripActivity(id as string);
       setTrip(response);
+      setTripActivity(activity);
     } catch (error) {
       notifySvc.showError(error);
     }
@@ -244,6 +235,16 @@ const TripDetails = () => {
           </CardContent>
         ) : null}
       </Card>
+      {trip?._id ? (
+        <Card sx={{ marginTop: "20px" }}>
+          <CardHeader title="Trip Activities" className="card-heading" />
+          <Divider />
+
+          <CardContent>
+            <TripActivity tripActivity={tripActivity} />
+          </CardContent>
+        </Card>
+      ) : null}
       {showDriverAssignDialog ? (
         <AssignDriverToTrip
           trip={trip as ITrip}
