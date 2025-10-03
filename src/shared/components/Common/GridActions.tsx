@@ -10,6 +10,7 @@ import { IUser } from "../../../interfaces/user.interface";
 import { IVehicle } from "../../../interfaces/vehicle.interface";
 import ConfirmDialog from "../ConfirmDialog";
 import BootstrapTooltip from "../Styled/BootstrapTooltip";
+import DoDisturbAltTwoToneIcon from "@mui/icons-material/DoDisturbAltTwoTone";
 
 interface IProps {
   info: IUser | IVehicle;
@@ -19,8 +20,10 @@ interface IProps {
   hideEditBtn?: boolean;
   hideDeleteBtn?: boolean;
   showMakePrimaryBtn?: boolean;
+  showCancelBtn?: boolean;
   onMakePrimary?: (id: string) => void;
   onDelete?: (id: string) => void;
+  onCancel?: (id: string) => void;
 }
 
 const GridActions = ({
@@ -31,8 +34,10 @@ const GridActions = ({
   hideEditBtn = false,
   hideDeleteBtn = false,
   showMakePrimaryBtn = false,
+  showCancelBtn = false,
   onMakePrimary = (id) => {},
   onDelete = (id) => {},
+  onCancel = (id) => {},
 }: IProps) => {
   const navigate = useNavigate();
   const [showConfirm, setShowConfirm] = useState<boolean>(false);
@@ -41,6 +46,7 @@ const GridActions = ({
     setShowConfirm(false);
     if (result) {
       onDelete(info._id as string);
+      onCancel(info._id as string);
     }
   };
 
@@ -72,6 +78,13 @@ const GridActions = ({
         <BootstrapTooltip title="Make Primary">
           <IconButton color="success" onClick={() => onMakePrimary(info._id as string)}>
             <WhereToVoteTwoToneIcon />
+          </IconButton>
+        </BootstrapTooltip>
+      ) : null}
+      {showCancelBtn ? (
+        <BootstrapTooltip title="Cancel">
+          <IconButton color="error" onClick={() => setShowConfirm(true)}>
+            <DoDisturbAltTwoToneIcon />
           </IconButton>
         </BootstrapTooltip>
       ) : null}

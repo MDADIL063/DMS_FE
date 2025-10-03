@@ -1,5 +1,5 @@
 import { DataGrid, GridCallbackDetails, GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from "@mui/x-data-grid";
-import { AppDefaults, AppMessages, InternalStatusTypes, PageSizeOptions, SortBy } from "../../../data/app.constant";
+import { AppDefaults, AppMessages, InternalStatusTypes, PageSizeOptions, SortBy, TripStatus, UserRoles } from "../../../data/app.constant";
 import { IListResponse } from "../../../interfaces/response.interface";
 import GridActions from "../../../shared/components/Common/GridActions";
 import GridCreatedOn from "../../../shared/components/Common/GridCreatedOn";
@@ -7,16 +7,18 @@ import { IUser } from "../../../interfaces/user.interface";
 import { useMemo } from "react";
 import { IVehicle } from "../../../interfaces/vehicle.interface";
 import ActivityStatusChip from "../../../shared/components/Common/ActivityStatusChip";
+import { useAppSelector } from "../../../redux/hooks";
 
 interface IProps {
   trips: IListResponse;
   values: any;
-  onDelete: (id: string) => void;
+  onCancel: (id: string) => void;
   onPaginationModelChange?: (model: GridPaginationModel, details: GridCallbackDetails<any>) => void;
   onSortModelChange?: (model: GridSortModel, details: GridCallbackDetails<any>) => void;
 }
 
-const TripList = ({ trips, values, onDelete, onPaginationModelChange, onSortModelChange }: IProps) => {
+const TripList = ({ trips, values, onCancel, onPaginationModelChange, onSortModelChange }: IProps) => {
+  const loggedInUser: IUser = useAppSelector((store) => store.loggedInUser);
   const columns: GridColDef[] = [
     {
       field: "reason",
@@ -71,7 +73,15 @@ const TripList = ({ trips, values, onDelete, onPaginationModelChange, onSortMode
       sortable: false,
       width: 200,
       renderCell: (params) => (
-        <GridActions info={{ ...params.row }} path="/trips" deleteConfirmMsg={AppMessages.TRIP_DELETE_CONGIRM} onDelete={onDelete} />
+        <GridActions
+          info={{ ...params.row }}
+          path="/trips"
+          deleteConfirmMsg={AppMessages.TRIP_CANCEL_CONFIRM}
+          onCancel={onCancel}
+          hideEditBtn={true}
+          hideDeleteBtn={true}
+          showCancelBtn={loggedInUser.role === UserRoles.CUSTOMER && params.row?.status === TripStatus.NEW}
+        />
       ),
       cellClassName: "ps-0",
     },

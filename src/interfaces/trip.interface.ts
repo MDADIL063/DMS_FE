@@ -28,7 +28,6 @@ export interface ITrip {
   _id: string;
   status: `${TripStatus}`;
   reason: string;
-  driver?: IUser | string;
   description: string;
   itemToCarry: string;
   capacity: number;

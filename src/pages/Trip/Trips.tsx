@@ -5,7 +5,7 @@ import { useFormik } from "formik";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDebouncedCallback } from "use-debounce";
-import { AppDefaults, SortBy } from "../../data/app.constant";
+import { AppDefaults, SortBy, TripStatus, UserRoles } from "../../data/app.constant";
 import { ITripFilters } from "../../interfaces/filter.interface";
 import { IListResponse } from "../../interfaces/response.interface";
 import { AppNotificationService } from "../../services/app-notification.service";
@@ -15,6 +15,8 @@ import SearchBox from "../../shared/components/Common/SearchBox";
 
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import TripList from "./components/TripList";
+import { IUser } from "../../interfaces/user.interface";
+import { useAppSelector } from "../../redux/hooks";
 
 const initialValues: any = {
   q: "",
@@ -30,7 +32,7 @@ const Trips = () => {
   const tripSvc = new TripService();
   const utilSvc = new UtilService();
   const navigate = useNavigate();
-
+  const loggedInUser: IUser = useAppSelector((store) => store.loggedInUser);
   const [trips, setTrips] = useState<IListResponse>({
     total: 0,
     data: [],
@@ -86,9 +88,15 @@ const Trips = () => {
     }
     setShowListView(!showListView);
   };
-  const deleteTrip = (id: string) => {
-    console.log("Deleting trip with id:", id);
-    // call service to delete
+  const onCancel = async (id: string) => {
+    try {
+      await tripSvc.updateTripStatus(id as string, {
+        status: TripStatus.CANCELLED,
+      });
+      loadTrips(values);
+    } catch (error) {
+      notifySvc.showError(error);
+    }
   };
 
   return (
@@ -124,11 +132,13 @@ const Trips = () => {
                   <MenuItem value="">
                     <em>All</em>
                   </MenuItem>
-                  <MenuItem value="New">New</MenuItem>
-                  <MenuItem value="Scheduled">Scheduled</MenuItem>
-                  <MenuItem value="InProgress">In Progress</MenuItem>
-                  <MenuItem value="Completed">Completed</MenuItem>
-                  <MenuItem value="Cancelled">Cancelled</MenuItem>
+                  {loggedInUser.role === UserRoles.ADMIN || loggedInUser.role === UserRoles.CUSTOMER ? (
+                    <MenuItem value={TripStatus.NEW}>{TripStatus.NEW}</MenuItem>
+                  ) : null}
+                  <MenuItem value={TripStatus.SCHEDULED}>{TripStatus.SCHEDULED}</MenuItem>
+                  <MenuItem value={TripStatus.INPROGRESS}>{TripStatus.INPROGRESS}</MenuItem>
+                  <MenuItem value={TripStatus.COMPLETED}>{TripStatus.COMPLETED}</MenuItem>
+                  <MenuItem value={TripStatus.CANCELLED}>{TripStatus.CANCELLED}</MenuItem>
                 </Select>
               </FormControl>
             </div>
@@ -149,7 +159,7 @@ const Trips = () => {
                 trips={trips}
                 // onSortModelChange={sortingModelChange}
                 onPaginationModelChange={paginatorModelChange}
-                onDelete={deleteTrip}
+                onCancel={onCancel}
               />
             </div>
           </div>

@@ -37,7 +37,7 @@ export enum AppMessages {
   SETTINGS_UPDATED = "Project settings updated successfully",
   CHECK_IN = "Check In Successfully",
   CHECK_OUT = "Check Out Successfully",
-  TRIP_DELETE_CONGIRM = "Trip deleted successfully",
+  TRIP_CANCEL_CONFIRM = "Do you want to cancel this trip?",
   DRIVER_ASSIGNED = "Driver assigned successfully",
 }
 
