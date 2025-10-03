@@ -24,4 +24,10 @@ export class AttendanceService {
     const response = await this.httpSvc.get(url, {});
     return response.data;
   }
+
+  async getTodayAvailabilityForAllDrivers(): Promise<{ data: IDriverAvailability[]; success: boolean }> {
+    const url = API_URLS.ALL_DRIVER_TODAYS_AVAILABILITY;
+    const response = await this.httpSvc.get(url, {});
+    return response.data;
+  }
 }

@@ -38,6 +38,7 @@ export enum AppMessages {
   CHECK_IN = "Check In Successfully",
   CHECK_OUT = "Check Out Successfully",
   TRIP_DELETE_CONGIRM = "Trip deleted successfully",
+  DRIVER_ASSIGNED = "Driver assigned successfully",
 }
 
 export enum SortBy {
@@ -69,6 +70,7 @@ export const API_URLS = {
   CHECK_IN: `${API_HOST}/driver-availability/check-in`,
   CHECK_OUT: `${API_HOST}/driver-availability/check-out`,
   DRIVER_TODAYS_AVAILABILITY: `${API_HOST}/driver-availability/today`,
+  ALL_DRIVER_TODAYS_AVAILABILITY: `${API_HOST}/driver-availability/today-all-drivers`,
   CUSTOMERS: `${API_HOST}/customers`,
   DRIVERS: `${API_HOST}/drivers`,
   VEHICLE_TYPES: `${API_HOST}/vehicle-type`,
@@ -165,7 +167,7 @@ export const PageSizeOptions = [5, 10, 25, 50];
 export enum TripStatus {
   NEW = "New",
   SCHEDULED = "Scheduled",
-  INPROGRESS = "InProgress",
+  INPROGRESS = "In Progress",
   COMPLETED = "Completed",
   CANCELLED = "Cancelled",
 }

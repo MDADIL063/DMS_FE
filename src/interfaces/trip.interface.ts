@@ -33,6 +33,7 @@ export interface ITrip {
   itemToCarry: string;
   capacity: number;
   vehicle: IVehicle;
+  driver: IUser;
   customer: IUser;
   startLocation: {
     address: string;

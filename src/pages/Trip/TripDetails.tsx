@@ -20,6 +20,10 @@ import { TripService } from "../../services/trip.service";
 import GeoMap from "../../shared/components/GeoMap";
 import AssignDriverToTrip from "./components/AssignDriverToTrip";
 import AddTaskTwoToneIcon from "@mui/icons-material/AddTaskTwoTone";
+import AlarmOnTwoToneIcon from "@mui/icons-material/AlarmOnTwoTone";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
+import DoDisturbAltTwoToneIcon from "@mui/icons-material/DoDisturbAltTwoTone";
+import DoneAllTwoToneIcon from "@mui/icons-material/DoneAllTwoTone";
 
 const TripDetails = () => {
   const [trip, setTrip] = useState<ITrip | null>(null);
@@ -32,6 +36,14 @@ const TripDetails = () => {
   const utilSvc = new UtilService();
 
   useEffect(() => {
+    // console.log(
+    //   navigator.geolocation.getCurrentPosition((position) => {
+    //     const latitude = position.coords.latitude;
+    //     const longitude = position.coords.longitude;
+    //     console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+    //     // You can then use these coordinates to display on a map, etc.
+    //   })
+    // );
     loadTrip();
   }, []);
 
@@ -44,16 +56,15 @@ const TripDetails = () => {
     }
   };
 
-  const updateStatus = async () => {
-    // try {
-    //   const payload = {
-    //     status: dailyExpense?.status === DailyExpenseStatus.PENDING ? DailyExpenseStatus.APPROVED : DailyExpenseStatus.PENDING,
-    //   };
-    //   await dailyExpenseSvc.updateDailyExpenseStatus(id as string, payload);
-    //   loadDailyExpense();
-    // } catch (error) {
-    //   notifySvc.showError(error);
-    // }
+  const updateStatus = async (status: `${TripStatus}`) => {
+    try {
+      await tripSvc.updateTripStatus(id as string, {
+        status,
+      });
+      loadTrip();
+    } catch (error) {
+      notifySvc.showError(error);
+    }
   };
 
   return (
@@ -80,11 +91,43 @@ const TripDetails = () => {
           title="Trip Details"
           className="card-heading"
           action={
-            trip && trip.status === TripStatus.NEW && loggedInUser.role === UserRoles.ADMIN ? (
-              <Button variant="outlined" color="secondary" onClick={() => setShowDriverAssignDialog(true)}>
-                <AddTaskTwoToneIcon fontSize="small" className="me-1" /> Assign Driver
-              </Button>
-            ) : null
+            <>
+              <>
+                {trip?.status === TripStatus.NEW && loggedInUser.role === UserRoles.ADMIN ? (
+                  <Button variant="outlined" color="secondary" onClick={() => setShowDriverAssignDialog(true)}>
+                    <AddTaskTwoToneIcon fontSize="small" className="me-1" /> Assign Driver
+                  </Button>
+                ) : null}
+              </>
+              <>
+                {trip?.status === TripStatus.SCHEDULED && loggedInUser.role === UserRoles.ADMIN ? (
+                  <Button variant="outlined" color="secondary" onClick={() => setShowDriverAssignDialog(true)}>
+                    <AddTaskTwoToneIcon fontSize="small" className="me-1" /> Change Driver
+                  </Button>
+                ) : null}
+              </>
+              <>
+                {trip?.status === TripStatus.SCHEDULED && loggedInUser.role === UserRoles.DRIVER ? (
+                  <Button variant="outlined" color="primary" onClick={() => updateStatus(TripStatus.INPROGRESS)}>
+                    <AlarmOnTwoToneIcon fontSize="small" className="me-1" /> Start Trip
+                  </Button>
+                ) : null}
+              </>
+              <>
+                {trip?.status === TripStatus.INPROGRESS && loggedInUser.role === UserRoles.DRIVER ? (
+                  <Button variant="outlined" color="primary" onClick={() => updateStatus(TripStatus.COMPLETED)}>
+                    <DoneAllTwoToneIcon fontSize="small" className="me-1" /> Complete Trip
+                  </Button>
+                ) : null}
+              </>
+              <>
+                {trip?.status === TripStatus.NEW && loggedInUser.role === UserRoles.CUSTOMER ? (
+                  <Button variant="outlined" color="error" onClick={() => updateStatus(TripStatus.CANCELLED)}>
+                    <DoDisturbAltTwoToneIcon fontSize="small" className="me-1" /> Cancel Trip
+                  </Button>
+                ) : null}
+              </>
+            </>
           }
         />
         <Divider />
@@ -128,6 +171,24 @@ const TripDetails = () => {
                             <ExternalLink path={`/customers/${trip?.customer?._id}`} text={trip.customer?.name} />
                           ) : (
                             <>{trip.customer?.name}</>
+                          )}
+                        </>
+                      ) : null}
+                    </p>
+                  </div>
+                </>
+              ) : null}
+              {loggedInUser.role === UserRoles.ADMIN || loggedInUser.role === UserRoles.CUSTOMER ? (
+                <>
+                  <div className="col-lg-3 col-md-4 col-6 mb-4">
+                    <p className="detail-label">Driver</p>
+                    <p className="detail-value">
+                      {trip.driver ? (
+                        <>
+                          {loggedInUser.role === UserRoles.ADMIN ? (
+                            <ExternalLink path={`/drivers/${trip?.driver?._id}`} text={trip.driver?.name} />
+                          ) : (
+                            <>{trip.driver?.name}</>
                           )}
                         </>
                       ) : null}
@@ -183,7 +244,17 @@ const TripDetails = () => {
           </CardContent>
         ) : null}
       </Card>
-      {showDriverAssignDialog ? <AssignDriverToTrip onClose={(value: boolean) => setShowDriverAssignDialog(false)} /> : null}
+      {showDriverAssignDialog ? (
+        <AssignDriverToTrip
+          trip={trip as ITrip}
+          onClose={(value: boolean) => {
+            if (value) {
+              loadTrip();
+            }
+            setShowDriverAssignDialog(false);
+          }}
+        />
+      ) : null}
     </div>
   );
 };

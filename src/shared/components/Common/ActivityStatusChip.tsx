@@ -28,7 +28,7 @@ const STATUS_COLOR_MAP: Record<
   [InternalStatusTypes.TRIP_STATUS]: {
     [TripStatus.NEW]: "info",
     [TripStatus.SCHEDULED]: "warning",
-    [TripStatus.INPROGRESS]: "success",
+    [TripStatus.INPROGRESS]: "primary",
     [TripStatus.COMPLETED]: "success",
     [TripStatus.CANCELLED]: "error",
   },
