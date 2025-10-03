@@ -11,7 +11,7 @@ export class AuthService {
   private loggedInUser: IUser = useAppSelector((store) => store.loggedInUser);
   private token: string = useAppSelector((store) => store.token);
 
-  async login(payload: ILoginCredentials) {
+  async login(payload: ILoginCredentials): Promise<boolean> {
     const response = await this.httpSvc.post(API_URLS.LOGIN, payload);
     this.storageSvc.setItem(LocalStorageKeys.LOGGED_IN_USER, response.data.user);
     this.storageSvc.setItem(LocalStorageKeys.TOKEN, response.data.token);

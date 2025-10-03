@@ -19,7 +19,7 @@ export class SidebarService {
       name: "Dashboard",
       path: "/dashboard",
       iconComp: DashboardTwoToneIcon,
-      roles: [UserRoles.ADMIN, UserRoles.DRIVER, UserRoles.CUSTOMER],
+      roles: [UserRoles.ADMIN, UserRoles.DRIVER],
       isConfigration: false,
     },
     {
@@ -64,13 +64,13 @@ export class SidebarService {
       roles: [UserRoles.ADMIN],
       isConfigration: true,
     },
-    {
-      name: "Address",
-      path: "/address",
-      iconComp: HomeWorkTwoToneIcon,
-      roles: [UserRoles.CUSTOMER],
-      isConfigration: false,
-    },
+    // {
+    //   name: "Address",
+    //   path: "/address",
+    //   iconComp: HomeWorkTwoToneIcon,
+    //   roles: [UserRoles.CUSTOMER],
+    //   isConfigration: false,
+    // },
   ];
 
   getSidebarItems(): ISidebarItem[] {

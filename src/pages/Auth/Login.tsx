@@ -10,7 +10,7 @@ import { UserCredential } from "firebase/auth";
 import { useFormik } from "formik";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { AppMessages, BreakPoints } from "../../data/app.constant";
+import { AppMessages, BreakPoints, UserRoles } from "../../data/app.constant";
 import { IGoogleLoginCredentials, ILoginCredentials } from "../../interfaces/auth.interface";
 import { LoginSchema } from "../../schemas/auth.schema";
 import { AppNotificationService } from "../../services/app-notification.service";
@@ -51,7 +51,7 @@ const Login = () => {
     try {
       await authSvc.loginWithGoogle(payload);
       notifySvc.showSucces(AppMessages.LOGIN_SUCCESS);
-      navigate("/dashboard");
+      navigate("/trips");
     } catch (error) {
       notifySvc.showError(error);
     }

@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader } from "@mui/material";
+import { Button, Card, CardContent, CardHeader } from "@mui/material";
 import Divider from "@mui/material/Divider";
 import { GridPaginationModel, GridSortModel } from "@mui/x-data-grid";
 import { useFormik } from "formik";
@@ -12,6 +12,7 @@ import { AppNotificationService } from "../../services/app-notification.service"
 import { TripService } from "../../services/trip.service";
 import { UtilService } from "../../services/util.service";
 import SearchBox from "../../shared/components/Common/SearchBox";
+import AddTwoToneIcon from "@mui/icons-material/AddTwoTone";
 
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import TripList from "./components/TripList";
@@ -101,13 +102,15 @@ const Trips = () => {
 
   return (
     <div className="content-wrapper">
-      <div className="row my-4">
-        {/* <div className="col-12 text-end">
-          <Button variant="contained" color="primary" onClick={() => navigate("/trips/new")}>
-            <AddTwoToneIcon fontSize="small" className="me-1" /> Add Trip
-          </Button>
-        </div> */}
-      </div>
+      {loggedInUser.role === UserRoles.CUSTOMER ? (
+        <div className="row my-4">
+          <div className="col-12 text-end">
+            <Button variant="contained" color="primary" onClick={() => navigate("/trips/new")}>
+              <AddTwoToneIcon fontSize="small" className="me-1" /> Add Trip
+            </Button>
+          </div>
+        </div>
+      ) : null}
       <Card>
         <CardHeader title="Trips" className="card-heading" />
         <Divider />
