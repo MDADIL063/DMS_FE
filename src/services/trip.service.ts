@@ -5,6 +5,8 @@ import { UtilService } from "./util.service";
 import { IDriverAvailability } from "../interfaces/attendance.interface";
 import { IFeedback, IFeedbackPayload } from "../interfaces/feedBack.interface";
 import { ITrip } from "../interfaces/trip.interface";
+import { IListResponse } from "../interfaces/response.interface";
+import { ITripFilters } from "../interfaces/filter.interface";
 
 export class TripService {
   private httpSvc = new HttpService();
@@ -14,6 +16,11 @@ export class TripService {
     const url = API_URLS.TRIPS;
     const response = await this.httpSvc.post(url, trip);
     return response.data.data;
+  }
+
+  async getTripCount(): Promise<any> {
+    const response = await this.httpSvc.get(`${API_URLS.TRIPS}/trips-count`);
+    return response.data; // will contain total, new, scheduled, etc.
   }
 
   async getSingleTrip(id: string): Promise<ITrip> {
@@ -26,5 +33,13 @@ export class TripService {
     const url = `${API_URLS.TRIPS}/${id}`;
     const response = await this.httpSvc.put(url, payload);
     return response.data.data;
+  }
+
+  async getTrips(filters?: ITripFilters): Promise<IListResponse> {
+    const response = await this.httpSvc.get(API_URLS.TRIPS, { params: filters });
+    return {
+      total: response.data.total,
+      data: response.data.data,
+    };
   }
 }

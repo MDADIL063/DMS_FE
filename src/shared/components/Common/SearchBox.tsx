@@ -9,7 +9,7 @@ interface IProps {
 
 const SearchBox = ({ values, setFieldValue }: IProps) => {
   return (
-    <FormControl variant="outlined">
+    <FormControl variant="outlined" fullWidth>
       <InputLabel size="small" htmlFor="outlined-adornment-search">
         Search
       </InputLabel>

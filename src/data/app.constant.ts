@@ -37,6 +37,7 @@ export enum AppMessages {
   SETTINGS_UPDATED = "Project settings updated successfully",
   CHECK_IN = "Check In Successfully",
   CHECK_OUT = "Check Out Successfully",
+  TRIP_DELETE_CONGIRM = "Trip deleted successfully",
 }
 
 export enum SortBy {

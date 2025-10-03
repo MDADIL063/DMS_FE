@@ -17,6 +17,8 @@ import {
 } from "@mui/material";
 import { DriverService } from "../../../services/driver.service";
 import { VehicleService } from "../../../services/vehicle.service";
+import Trips from "../../Trip/Trips";
+import { TripService } from "../../../services/trip.service";
 
 // import { TripService } from "../services/trip.service";
 
@@ -25,8 +27,8 @@ interface DashboardStats {
   activeDrivers: number;
   totalVehicles: number;
   activeVehicles: number;
-  // totalTrips: number;
-  // activeTrips: number;
+  totalTrips: number;
+  activeTrips: number;
 }
 
 const AdminDashboard: React.FC = () => {
@@ -36,7 +38,7 @@ const AdminDashboard: React.FC = () => {
 
   const driverSvc = new DriverService();
   const vehicleSvc = new VehicleService();
-  // const tripSvc = new TripService();
+  const tripSvc = new TripService();
 
   useEffect(() => {
     loadDashboard();
@@ -46,7 +48,7 @@ const AdminDashboard: React.FC = () => {
     try {
       const driverCount = await driverSvc.getDriverCount();
       const vehicleCount = await vehicleSvc.getVehicleCount();
-      // const tripCount = await tripSvc.getTripCount();
+      const tripCount = await tripSvc.getTripCount();
       // const latestTrips = await tripSvc.getRecentTrips();
 
       setStats({
@@ -54,8 +56,8 @@ const AdminDashboard: React.FC = () => {
         activeDrivers: driverCount.active,
         totalVehicles: vehicleCount.total,
         activeVehicles: vehicleCount.active,
-        // totalTrips: tripCount.total,
-        // activeTrips: tripCount.active,
+        totalTrips: tripCount.total,
+        activeTrips: tripCount.new,
       });
 
       // setRecentTrips(latestTrips);
@@ -104,7 +106,7 @@ const AdminDashboard: React.FC = () => {
           {renderStatCard("Vehicles", stats?.totalVehicles || 0, stats?.activeVehicles || 0, "#2e7d32")}
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
-          {renderStatCard("Trips", 4 || 0, 5 || 0, "#ed6c02")}
+          {renderStatCard("Trips", stats?.totalTrips || 0, stats?.activeTrips || 0, "#ed6c02")}
         </Grid>
       </Grid>
 
@@ -112,18 +114,19 @@ const AdminDashboard: React.FC = () => {
         Recent Trips
       </Typography>
       <Divider sx={{ mb: 2 }} />
+      <Trips />
 
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Trip ID</TableCell>
+              {/* <TableCell>Trip ID</TableCell>
               <TableCell>Customer</TableCell>
               <TableCell>Driver</TableCell>
               <TableCell>From</TableCell>
               <TableCell>To</TableCell>
               <TableCell>Status</TableCell>
-              <TableCell>Start Date</TableCell>
+              <TableCell>Start Date</TableCell> */}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -140,11 +143,11 @@ const AdminDashboard: React.FC = () => {
                 </TableRow>
               ))
             ) : ( */}
-            <TableRow>
+            {/* <TableRow>
               <TableCell colSpan={7} align="center">
                 No recent trips available
               </TableCell>
-            </TableRow>
+            </TableRow> */}
             {/* )} */}
           </TableBody>
         </Table>

@@ -17,6 +17,12 @@ export interface IDriverFilters extends CommonFilters {
   status?: `${ActivityStatus}`;
   accountType?: `${AccountType}`;
 }
+export interface ITripFilters extends CommonFilters {
+  status?: `${ActivityStatus}`;
+  accountType?: `${AccountType}`;
+  fromDate?: string; // YYYY-MM-DD
+  toDate?: string; // YYYY-MM-DD
+}
 
 export interface IVehicleTypeFilters extends CommonFilters {}
 
