@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, Card, CardContent, Typography, Stack, CircularProgress } from "@mui/material";
+import { Box, Button, Card, CardContent, Typography, Stack, CircularProgress, Chip } from "@mui/material";
 
 import { AttendanceService } from "../../../services/attendance.service";
 import { AppMessages, DateFormats, DriverAvailabilityStatus } from "../../../data/app.constant";
@@ -78,56 +78,88 @@ const CheckInCheckOut: React.FC = () => {
 
   return (
     // <Box>
-    <Card sx={{ borderRadius: 3, boxShadow: 4 }}>
+    <Card sx={{ borderRadius: 3, boxShadow: 4, minHeight: "141px" }}>
       <CardContent>
-        <Typography variant="h5" align="center" gutterBottom>
-          Driver Attendance
-        </Typography>
+        <div className="row">
+          <div className="col-6 ">
+            <Typography variant="h6" gutterBottom>
+              Today Attendance
+            </Typography>
+          </div>
+          <div className="col-6 text-end">
+            <Typography variant="subtitle1" sx={{ mb: 3 }}>
+              {status === DriverAvailabilityStatus.AVAILABLE ? (
+                <Chip variant="filled" color="success" size="small" label={DriverAvailabilityStatus.AVAILABLE} />
+              ) : null}
+              {status === DriverAvailabilityStatus.INACTIVE ? (
+                <Chip variant="filled" color="error" size="small" label={DriverAvailabilityStatus.INACTIVE} />
+              ) : null}
+              {status === DriverAvailabilityStatus.ON_TRIP ? (
+                <Chip variant="filled" color="primary" size="small" label={DriverAvailabilityStatus.ON_TRIP} />
+              ) : null}
+              {status === DriverAvailabilityStatus.OFF_DUTY ? (
+                <Chip variant="filled" color="error" size="small" label={DriverAvailabilityStatus.OFF_DUTY} />
+              ) : null}
+            </Typography>
+          </div>
 
-        <Typography variant="subtitle1" align="center" sx={{ mb: 3 }}>
-          Current Status:
-          <strong
-            style={{
-              color: status === "Available" ? "green" : status === "Off Duty" ? "red" : "gray",
-            }}
-          >
-            {status}
-          </strong>
-        </Typography>
-        {checkInTime ? (
-          <Typography variant="subtitle1" align="center" sx={{ mb: 3 }}>
-            CheckIn Time:
-            <strong
-              style={{
-                color: "gray",
-              }}
-            >
-              {checkInTime}
-            </strong>
-          </Typography>
-        ) : null}
-        {checkOutTime ? (
-          <Typography variant="subtitle1" align="center" sx={{ mb: 3 }}>
-            CheckOut Time:
-            <strong
-              style={{
-                color: "gray",
-              }}
-            >
-              {checkOutTime}
-            </strong>
-          </Typography>
-        ) : null}
+          <div className="col-7">
+            {checkInTime ? (
+              <Typography variant="body2" sx={{ mb: 3 }}>
+                Check In Time:{" "}
+                <strong
+                  style={{
+                    color: "gray",
+                  }}
+                >
+                  {checkInTime}
+                </strong>
+              </Typography>
+            ) : null}
+            {checkOutTime ? (
+              <Typography variant="body2" sx={{ mb: 3 }}>
+                Check Out Time:{" "}
+                <strong
+                  style={{
+                    color: "gray",
+                  }}
+                >
+                  {checkOutTime}
+                </strong>
+              </Typography>
+            ) : null}
+          </div>
 
-        <Stack direction="row" spacing={2} justifyContent="center">
-          <Button variant="contained" color="success" disabled={loading || !!checkInTime} onClick={driverCheckIn}>
-            {loading && !checkInTime ? <CircularProgress size={20} color="inherit" /> : "Check In"}
-          </Button>
+          <div className="col-5 text-end">
+            <Stack direction="row" spacing={2} justifyContent="end">
+              {!checkInTime ? (
+                <Button variant="contained" color="success" disabled={loading || !!checkInTime} onClick={driverCheckIn}>
+                  {loading && !checkInTime ? <CircularProgress size={20} color="inherit" /> : "Check In"}
+                </Button>
+              ) : null}
 
-          <Button variant="contained" color="error" disabled={loading || !checkInTime || !!checkOutTime} onClick={driverCheckOut}>
-            {loading && checkInTime && !checkOutTime ? <CircularProgress size={20} color="inherit" /> : "Check Out"}
-          </Button>
-        </Stack>
+              {checkInTime && !checkOutTime ? (
+                <Button variant="contained" color="error" disabled={loading || !checkInTime || !!checkOutTime} onClick={driverCheckOut}>
+                  {loading && checkInTime && !checkOutTime ? <CircularProgress size={20} color="inherit" /> : "Check Out"}
+                </Button>
+              ) : null}
+
+              {checkInTime && checkOutTime ? (
+                <Typography variant="body2" sx={{ mb: 3 }}>
+                  Working Hours
+                  <br />
+                  <strong
+                    style={{
+                      color: "gray",
+                    }}
+                  >
+                    {utilSvc.getWorkingDuration(checkInTime, checkOutTime)}
+                  </strong>
+                </Typography>
+              ) : null}
+            </Stack>
+          </div>
+        </div>
       </CardContent>
     </Card>
     // </Box>

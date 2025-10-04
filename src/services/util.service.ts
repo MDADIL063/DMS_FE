@@ -263,4 +263,21 @@ export class UtilService {
     }
     return `${hours} Hours ${minutes} Minutes`;
   }
+
+  getWorkingDuration(checkInTime: string, checkOutTime: string): string {
+    const checkIn = new Date(checkInTime);
+    const checkOut = new Date(checkOutTime);
+
+    const diffMs = checkOut.getTime() - checkIn.getTime(); // difference in milliseconds
+    if (diffMs < 0) return "Invalid Time"; // sanity check
+
+    const totalMinutes = Math.floor(diffMs / (1000 * 60));
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+
+    if (!hours) {
+      return `${minutes} Minutes`;
+    }
+    return `${hours} Hours ${minutes} Minutes`;
+  }
 }

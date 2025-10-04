@@ -20,6 +20,8 @@ import { DriverService } from "../../../services/driver.service";
 import { VehicleService } from "../../../services/vehicle.service";
 import Trips from "../../Trip/Trips";
 import { TripService } from "../../../services/trip.service";
+import { IUser } from "../../../interfaces/user.interface";
+import { useAppSelector } from "../../../redux/hooks";
 
 // import { TripService } from "../services/trip.service";
 
@@ -31,6 +33,7 @@ interface DashboardStats {
 const DriverDashboard = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const loggedInUser: IUser = useAppSelector((store) => store.loggedInUser);
   // const [recentTrips, setRecentTrips] = useState<any[]>([]);
 
   const driverSvc = new DriverService();
@@ -86,7 +89,7 @@ const DriverDashboard = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Admin Dashboard
+        Hi {loggedInUser.name}!
       </Typography>
 
       <Grid container spacing={3} mb={4}>
