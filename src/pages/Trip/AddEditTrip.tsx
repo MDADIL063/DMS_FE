@@ -64,7 +64,7 @@ const tripValidationSchema = Yup.object().shape({
     }),
   distance: Yup.number().required("Distance is required").min(0, "Distance cannot be negative"),
   duration: Yup.string().optional(),
-  startDateTime: Yup.date().required("Start date & time is required").min(dayjs().toDate(), "Start date & time cannot be in the past"),
+  startDateTime: Yup.date().required("Start date & time is required"),
 });
 
 const AddEditTrip = () => {
@@ -76,13 +76,14 @@ const AddEditTrip = () => {
   const notifySvc = new AppNotificationService();
   const utilSvc = new UtilService();
   const vehicleOriginalRef = useRef<IVehicle[]>([]);
+  const [isDataLoading, setIsDataLoading] = useState<boolean>(false);
 
   const { values, handleBlur, handleChange, handleSubmit, setFieldValue, errors, touched } = useFormik({
     initialValues,
     validationSchema: tripValidationSchema,
     onSubmit: async (vals) => {
       try {
-        const payload = { ...vals, startDateTime: dayjs(vals.startDateTime).toISOString() };
+        const payload = { ...values, startDateTime: dayjs(values.startDateTime).toISOString() };
         if (id) {
           payload.price = (values.distance * (vehicles.find((vehicle) => vehicle._id === values.vehicle)?.costPerKm || 0) || 0).toFixed(2);
           await tripSvc.updateTrip(id, payload);
@@ -100,31 +101,56 @@ const AddEditTrip = () => {
   });
 
   useEffect(() => {
-    loadVehicles();
+    loadVehicles(0);
     if (id) {
       loadTrip();
+    } else {
+      setIsDataLoading(true);
     }
   }, []);
 
   const debouncedCapacityChange = useDebouncedCallback((value: number) => {
     // call your API or load function with updated capacity
-    loadVehicles();
+    loadVehicles(value);
   }, 500);
 
-  const loadVehicles = async () => {
+  const loadVehicles = async (capacity: number) => {
     try {
       if (!vehicleOriginalRef.current.length) {
         const res = await vehicleSvc.getVehicles({ status: "Active" });
         vehicleOriginalRef.current = res.data;
       }
-      setVehicles(vehicleOriginalRef.current.filter((vehicle) => vehicle.capacity >= values.capacity));
+      setVehicles(vehicleOriginalRef.current.filter((vehicle) => vehicle.capacity >= capacity));
     } catch (err) {
       notifySvc.showError(err);
     }
   };
 
   const loadTrip = async () => {
-    // Load trip details here if editing
+    try {
+      const trip = await tripSvc.getSingleTrip(id as string);
+      if (trip) {
+        setFieldValue("reason", trip.reason || "");
+        setFieldValue("itemToCarry", trip.itemToCarry || "");
+        setFieldValue("description", trip.description || "");
+        setFieldValue("capacity", trip.capacity || 0);
+        if (trip.startLocation) {
+          setFieldValue("startLocation", trip.startLocation || {});
+        }
+        if (trip.endLocation) {
+          setFieldValue("endLocation", trip.endLocation || {});
+        }
+        setFieldValue("distance", trip.distance || 0);
+        setFieldValue("duration", trip.duration || "");
+        setFieldValue("startDateTime", dayjs(trip.startDateTime) || "");
+        await loadVehicles(trip.capacity);
+        setFieldValue("vehicle", trip.vehicle?._id || "");
+      }
+    } catch (err) {
+      notifySvc.showError(err);
+    } finally {
+      setIsDataLoading(true);
+    }
   };
 
   return (
@@ -138,213 +164,216 @@ const AddEditTrip = () => {
         <CardHeader title={id ? "Edit Trip" : "Add Trip"} className="card-heading" />
         <Divider />
         <CardContent>
-          <form onSubmit={handleSubmit}>
-            <div className="row">
-              {/* Reason */}
-              <div className="col-md-6 mt-4">
-                <TextField
-                  label="Reason"
-                  name="reason"
-                  value={values.reason}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  fullWidth
-                  error={!!errors.reason && !!touched.reason}
-                  helperText={touched.reason && errors.reason}
-                />
-              </div>
-
-              {/* Item to Carry */}
-              <div className="col-md-6 mt-4">
-                <TextField
-                  label="Item to Carry"
-                  name="itemToCarry"
-                  value={values.itemToCarry}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  fullWidth
-                  error={!!errors.itemToCarry && !!touched.itemToCarry}
-                  helperText={touched.itemToCarry && errors.itemToCarry}
-                />
-              </div>
-
-              {/* Description */}
-              <div className="col-md-12 mt-4">
-                <TextField
-                  label="Description"
-                  name="description"
-                  multiline
-                  rows={3}
-                  value={values.description}
-                  onChange={handleChange}
-                  fullWidth
-                  error={!!errors.description && !!touched.description}
-                  helperText={touched.description && errors.description}
-                />
-              </div>
-
-              {/* Capacity */}
-              <div className="col-md-6 mt-4">
-                <TextField
-                  label="Capacity (kg)"
-                  name="capacity"
-                  type="number"
-                  value={values.capacity}
-                  onChange={(e) => {
-                    const value = Number(e.target.value);
-                    setFieldValue("capacity", value); // update Formik state
-                    debouncedCapacityChange(value); // trigger debounced API call
-                  }}
-                  onBlur={handleBlur}
-                  fullWidth
-                  error={!!errors.capacity && !!touched.capacity}
-                  helperText={touched.capacity && errors.capacity}
-                />
-              </div>
-
-              {/* Vehicle */}
-              <div className="col-md-6 mt-4">
-                <FormControl fullWidth error={!!errors.vehicle && !!touched.vehicle}>
-                  <InputLabel>Vehicle</InputLabel>
-                  <Select name="vehicle" label="Vehicle" value={values.vehicle} onChange={handleChange}>
-                    <MenuItem value="">
-                      <em>Select Vehicle</em>
-                    </MenuItem>
-                    {vehicles.map((v) => (
-                      <MenuItem key={v._id} value={v._id}>
-                        {v.vehicleType.name} - {v.vehicleNumber} ({v.capacity} kg)
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  {touched.vehicle && errors.vehicle && <small className="text-danger mt-1 fs-12">{errors.vehicle}</small>}
-                </FormControl>
-              </div>
-
-              {/* Start Location */}
-              <div className="col-md-6 mt-4">
-                <GeoAddress
-                  address={null}
-                  fullAddressString={values.startLocation.address}
-                  lat={values.startLocation.lat}
-                  lng={values.startLocation.lng}
-                  geoAddressChange={(address) => {
-                    setFieldValue("startLocation", {
-                      address: utilSvc.getFullAddress(address),
-                      lat: address.lat,
-                      lng: address.lng,
-                    });
-                    if (address.lat && address.lng && values.endLocation.lat && values.endLocation.lng) {
-                      const distanceInKm = utilSvc.getDistanceFromLatLonInKm(
-                        address.lat,
-                        address.lng,
-                        values.endLocation.lat,
-                        values.endLocation.lng
-                      );
-                      setFieldValue("distance", distanceInKm);
-                      setFieldValue("duration", utilSvc.getDurationFromDistance(distanceInKm));
-                      const vehicle = vehicles.find((vehicle) => vehicle._id === values.vehicle);
-                      setFieldValue("price", distanceInKm * (vehicle?.costPerKm || 0) || 0);
-                    }
-                  }}
-                  addressLabel="Start Location"
-                />
-                {touched.startLocation && errors.startLocation && (
-                  <small className="text-danger mt-1 fs-12">Please provide the start location</small>
-                )}
-              </div>
-              {/* End Location */}
-              <div className="col-md-6 mt-4">
-                <GeoAddress
-                  address={null}
-                  fullAddressString={values.endLocation.address}
-                  lat={values.endLocation.lat}
-                  lng={values.endLocation.lng}
-                  geoAddressChange={(address) => {
-                    setFieldValue("endLocation", {
-                      address: utilSvc.getFullAddress(address),
-                      lat: address.lat,
-                      lng: address.lng,
-                    });
-                    if (values.startLocation.lat && values.startLocation.lng && address.lat && address.lng) {
-                      const distanceInKm = utilSvc.getDistanceFromLatLonInKm(
-                        values.startLocation.lat,
-                        values.startLocation.lng,
-                        address.lat,
-                        address.lng
-                      );
-                      setFieldValue("distance", distanceInKm);
-                      setFieldValue("duration", utilSvc.getDurationFromDistance(distanceInKm));
-                    }
-                  }}
-                  addressLabel="End Location"
-                />
-                {touched.endLocation && errors.endLocation && (
-                  <small className="text-danger mt-1 fs-12">Please provide the end location</small>
-                )}
-              </div>
-
-              {/* Distance */}
-              <div className="col-md-6 mt-4">
-                <TextField
-                  label="Distance (km)"
-                  name="distance"
-                  type="number"
-                  value={values.distance}
-                  onChange={handleChange}
-                  fullWidth
-                  error={!!errors.distance && !!touched.distance}
-                  helperText={touched.distance && errors.distance}
-                  disabled
-                />
-              </div>
-
-              {/* Duration */}
-              <div className="col-md-6 mt-4">
-                <TextField
-                  label="Approx. Duration"
-                  name="duration"
-                  type="text"
-                  value={values.duration}
-                  onChange={handleChange}
-                  fullWidth
-                  error={!!errors.duration && !!touched.duration}
-                  helperText={touched.duration && errors.duration}
-                  disabled
-                />
-              </div>
-
-              {/* Start DateTime */}
-              <div className="col-md-6 mt-4">
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DateTimePicker
-                    sx={{ width: "100%" }}
-                    label="Start Date & Time"
-                    value={values.startDateTime}
-                    onChange={(val) => setFieldValue("startDateTime", val)}
-                    minDateTime={dayjs()}
+          {isDataLoading ? (
+            <form onSubmit={handleSubmit}>
+              <div className="row">
+                {/* Reason */}
+                <div className="col-md-6 mt-4">
+                  <TextField
+                    label="Reason"
+                    name="reason"
+                    value={values.reason}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    fullWidth
+                    error={!!errors.reason && !!touched.reason}
+                    helperText={touched.reason && errors.reason}
                   />
-                </LocalizationProvider>
-              </div>
+                </div>
 
-              {/* Trip Price */}
-              <div className="col-md-6 mt-4 text-end">
-                <b>
-                  Price:{" "}
-                  <span style={{ color: "green" }}>
-                    <CurrencyRupeeTwoToneIcon sx={{ fontSize: "16px" }} />
-                    {(values.distance * (vehicles.find((vehicle) => vehicle._id === values.vehicle)?.costPerKm || 0) || 0).toFixed(2)}
-                  </span>
-                </b>
-              </div>
+                {/* Item to Carry */}
+                <div className="col-md-6 mt-4">
+                  <TextField
+                    label="Item to Carry"
+                    name="itemToCarry"
+                    value={values.itemToCarry}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    fullWidth
+                    error={!!errors.itemToCarry && !!touched.itemToCarry}
+                    helperText={touched.itemToCarry && errors.itemToCarry}
+                  />
+                </div>
 
-              {/* Submit */}
-              <div className="col-12 mt-4">
-                <Button type="submit" variant="contained" color="primary" fullWidth>
-                  {id ? "Update Trip" : "Create Trip"}
-                </Button>
+                {/* Description */}
+                <div className="col-md-12 mt-4">
+                  <TextField
+                    label="Description"
+                    name="description"
+                    multiline
+                    rows={3}
+                    value={values.description}
+                    onChange={handleChange}
+                    fullWidth
+                    error={!!errors.description && !!touched.description}
+                    helperText={touched.description && errors.description}
+                  />
+                </div>
+
+                {/* Capacity */}
+                <div className="col-md-6 mt-4">
+                  <TextField
+                    label="Capacity (kg)"
+                    name="capacity"
+                    type="number"
+                    value={values.capacity}
+                    onChange={(e) => {
+                      const value = Number(e.target.value);
+                      setFieldValue("capacity", value); // update Formik state
+                      debouncedCapacityChange(value); // trigger debounced API call
+                    }}
+                    onBlur={handleBlur}
+                    fullWidth
+                    error={!!errors.capacity && !!touched.capacity}
+                    helperText={touched.capacity && errors.capacity}
+                  />
+                </div>
+
+                {/* Vehicle */}
+                <div className="col-md-6 mt-4">
+                  <FormControl fullWidth error={!!errors.vehicle && !!touched.vehicle}>
+                    <InputLabel>Vehicle</InputLabel>
+                    <Select name="vehicle" label="Vehicle" value={values.vehicle} onChange={handleChange}>
+                      <MenuItem value="">
+                        <em>Select Vehicle</em>
+                      </MenuItem>
+                      {vehicles.map((v) => (
+                        <MenuItem key={v._id} value={v._id}>
+                          {v.vehicleType.name} - {v.vehicleNumber} ({v.capacity} kg)
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    {touched.vehicle && errors.vehicle && <small className="text-danger mt-1 fs-12">{errors.vehicle}</small>}
+                  </FormControl>
+                </div>
+
+                {/* Start Location */}
+                <div className="col-md-6 mt-4">
+                  <GeoAddress
+                    address={null}
+                    fullAddressString={values.startLocation.address}
+                    lat={values.startLocation.lat}
+                    lng={values.startLocation.lng}
+                    geoAddressChange={(address) => {
+                      setFieldValue("startLocation", {
+                        address: utilSvc.getFullAddress(address),
+                        lat: address.lat,
+                        lng: address.lng,
+                      });
+                      if (address.lat && address.lng && values.endLocation.lat && values.endLocation.lng) {
+                        const distanceInKm = utilSvc.getDistanceFromLatLonInKm(
+                          address.lat,
+                          address.lng,
+                          values.endLocation.lat,
+                          values.endLocation.lng
+                        );
+                        setFieldValue("distance", distanceInKm);
+                        setFieldValue("duration", utilSvc.getDurationFromDistance(distanceInKm));
+                      }
+                    }}
+                    addressLabel="Start Location"
+                  />
+                  {touched.startLocation && errors.startLocation && (
+                    <small className="text-danger mt-1 fs-12">Please provide the start location</small>
+                  )}
+                </div>
+                {/* End Location */}
+                <div className="col-md-6 mt-4">
+                  <GeoAddress
+                    address={null}
+                    fullAddressString={values.endLocation.address}
+                    lat={values.endLocation.lat}
+                    lng={values.endLocation.lng}
+                    geoAddressChange={(address) => {
+                      setFieldValue("endLocation", {
+                        address: utilSvc.getFullAddress(address),
+                        lat: address.lat,
+                        lng: address.lng,
+                      });
+                      if (values.startLocation.lat && values.startLocation.lng && address.lat && address.lng) {
+                        const distanceInKm = utilSvc.getDistanceFromLatLonInKm(
+                          values.startLocation.lat,
+                          values.startLocation.lng,
+                          address.lat,
+                          address.lng
+                        );
+                        setFieldValue("distance", distanceInKm);
+                        setFieldValue("duration", utilSvc.getDurationFromDistance(distanceInKm));
+                      }
+                    }}
+                    addressLabel="End Location"
+                  />
+                  {touched.endLocation && errors.endLocation && (
+                    <small className="text-danger mt-1 fs-12">Please provide the end location</small>
+                  )}
+                </div>
+
+                {/* Distance */}
+                <div className="col-md-6 mt-4">
+                  <TextField
+                    label="Distance (km)"
+                    name="distance"
+                    type="number"
+                    value={values.distance}
+                    onChange={handleChange}
+                    fullWidth
+                    error={!!errors.distance && !!touched.distance}
+                    helperText={touched.distance && errors.distance}
+                    disabled
+                  />
+                </div>
+
+                {/* Duration */}
+                <div className="col-md-6 mt-4">
+                  <TextField
+                    label="Approx. Duration"
+                    name="duration"
+                    type="text"
+                    value={values.duration}
+                    onChange={handleChange}
+                    fullWidth
+                    error={!!errors.duration && !!touched.duration}
+                    helperText={touched.duration && errors.duration}
+                    disabled
+                  />
+                </div>
+
+                {/* Start DateTime */}
+                <div className="col-md-6 mt-4">
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DateTimePicker
+                      sx={{ width: "100%" }}
+                      label="Date & Time"
+                      value={values.startDateTime}
+                      onChange={(val) => setFieldValue("startDateTime", val)}
+                      minDateTime={id ? null : dayjs()}
+                    />
+                  </LocalizationProvider>
+                </div>
+
+                {/* Trip Price */}
+                <div className="col-md-6 mt-4 text-end">
+                  <b>
+                    Price:{" "}
+                    <span style={{ color: "green" }}>
+                      <CurrencyRupeeTwoToneIcon sx={{ fontSize: "16px" }} />
+                      {(values.distance * (vehicles.find((vehicle) => vehicle._id === values.vehicle)?.costPerKm || 0) || 0).toFixed(2)}
+                    </span>
+                  </b>
+                </div>
               </div>
-            </div>
-          </form>
+              <div className="row">
+                {/* Submit */}
+                <div className="col-4"></div>
+                <div className="col-4 mt-4">
+                  <Button type="submit" variant="contained" color="primary" fullWidth>
+                    {id ? "Update Trip" : "Create Trip"}
+                  </Button>
+                </div>
+                <div className="col-4"></div>
+              </div>
+            </form>
+          ) : null}
         </CardContent>
       </Card>
     </div>

@@ -28,7 +28,11 @@ const initialValues: any = {
   sortBy: AppDefaults.SORT_BY,
 };
 
-const Trips = () => {
+interface Props {
+  showingOnDashboard?: boolean;
+}
+
+const Trips = ({ showingOnDashboard = false }: Props) => {
   const notifySvc = new AppNotificationService();
   const tripSvc = new TripService();
   const utilSvc = new UtilService();
@@ -38,7 +42,6 @@ const Trips = () => {
     total: 0,
     data: [],
   });
-  const [showFilters, setShowFilters] = useState<boolean>(false);
   const [showListView, setShowListView] = useState<boolean>(!utilSvc.isMobile());
 
   const { values, setFieldValue } = useFormik({
@@ -101,7 +104,7 @@ const Trips = () => {
   };
 
   return (
-    <div className="content-wrapper">
+    <div className={!showingOnDashboard ? "content-wrapper" : ""}>
       {loggedInUser.role === UserRoles.CUSTOMER ? (
         <div className="row my-4">
           <div className="col-12 text-end">

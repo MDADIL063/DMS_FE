@@ -114,7 +114,7 @@ const AdminDashboard: React.FC = () => {
         Recent Trips
       </Typography>
       <Divider sx={{ mb: 2 }} />
-      <Trips />
+      <Trips showingOnDashboard={true} />
 
       <TableContainer component={Paper}>
         <Table>

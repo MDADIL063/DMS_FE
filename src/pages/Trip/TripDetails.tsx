@@ -5,7 +5,7 @@ import DoneAllTwoToneIcon from "@mui/icons-material/DoneAllTwoTone";
 import { Button, Card, CardContent, CardHeader } from "@mui/material";
 import Divider from "@mui/material/Divider";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { DateFormats, InternalStatusTypes, TripStatus, UserRoles } from "../../data/app.constant";
 import { ITrip } from "../../interfaces/trip.interface";
 import { IUser } from "../../interfaces/user.interface";
@@ -22,6 +22,7 @@ import AssignDriverToTrip from "./components/AssignDriverToTrip";
 import TripActivity from "./components/TripActivity";
 import { ITripActivity } from "../../interfaces/trip-activity.interface";
 import FeedbackForm from "../../shared/components/Common/FeedbackForm";
+import CreateTwoToneIcon from "@mui/icons-material/CreateTwoTone";
 
 const TripDetails = () => {
   const [trip, setTrip] = useState<ITrip | null>(null);
@@ -32,6 +33,7 @@ const TripDetails = () => {
   const notifySvc = new AppNotificationService();
   const tripSvc = new TripService();
   const utilSvc = new UtilService();
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadTrip();
@@ -66,16 +68,11 @@ const TripDetails = () => {
           <BackButton />
         </div>
         <div className="col-8 text-end">
-          {/* {dailyExpense?.status === DailyExpenseStatus.PENDING ? (
-            <Button
-              variant="outlined"
-              color="primary"
-              startIcon={<CreateTwoToneIcon />}
-              onClick={() => navigate(`/daily-expenses/${id}/edit`)}
-            >
-              Edit Daily Expense
+          {loggedInUser.role === UserRoles.CUSTOMER && trip?.status === TripStatus.NEW ? (
+            <Button variant="outlined" color="primary" startIcon={<CreateTwoToneIcon />} onClick={() => navigate(`/trips/${id}/edit`)}>
+              Edit Trip
             </Button>
-          ) : null} */}
+          ) : null}
         </div>
       </div>
       <Card>
@@ -206,7 +203,7 @@ const TripDetails = () => {
               </div>
               <div className="col-lg-3 col-md-4 col-6 mb-4">
                 <p className="detail-label">Price</p>
-                <p className="detail-value">
+                <p className="detail-value" style={{ color: "green", fontWeight: 500 }}>
                   <Currency value={Number(trip.price) || 0} />
                 </p>
               </div>

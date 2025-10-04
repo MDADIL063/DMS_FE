@@ -78,7 +78,7 @@ const TripList = ({ trips, values, onCancel, onPaginationModelChange, onSortMode
           path="/trips"
           deleteConfirmMsg={AppMessages.TRIP_CANCEL_CONFIRM}
           onCancel={onCancel}
-          hideEditBtn={true}
+          hideEditBtn={!(loggedInUser.role === UserRoles.CUSTOMER && params.row?.status === TripStatus.NEW)}
           hideDeleteBtn={true}
           showCancelBtn={loggedInUser.role === UserRoles.CUSTOMER && params.row?.status === TripStatus.NEW}
         />
